@@ -21,6 +21,7 @@ import EditAcademy from '../views/editSecAca.vue'
 import EditHealth from '../views/editSecSal.vue'
 import EditFinance from '../views/editSecFin.vue'
 import EditLeisure from '../views/editSecLei.vue'
+import UserProfile from '../views/UserProfile.vue'
 
 
 const routes = [
@@ -46,6 +47,7 @@ const routes = [
   { path: '/editHealth/:id', name: 'EditHealth', component: EditHealth  },// Editar registro salud
   { path: '/editFinance/:id', name: 'EditFinance', component: EditFinance },// Editar registro finanzas
   { path: '/editLeisure/:id', name: 'EditLeisure', component: EditLeisure },// Editar registro tiempo libre
+  { path: '/profile', component: UserProfile }, // Perfil del usuario
 ]
 
 const router = createRouter({

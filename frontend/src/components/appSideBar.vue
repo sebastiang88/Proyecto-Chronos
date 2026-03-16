@@ -18,13 +18,15 @@
     <!-- Este es el avatar -->
     <div :class="{'hidden': !isSidebarOpen}"
     class="avatar mb-16 mt-8">
-      <div class="w-22 h-22 rounded-full ring-2 ring-[#fcba03] ring-offset-2 ring-offset-base-100 overflow-hidden mx-auto ">
-        <img 
-          src="https://img.daisyui.com/images/profile/demo/spiderperson@192.webp" 
-          alt="Avatar"
-          class="object-cover w-full h-full"
-        />
-      </div>
+      <router-link to="/profile" class="block">
+        <div class="w-22 h-22 rounded-full ring-2 ring-[#fcba03] ring-offset-2 ring-offset-base-100 overflow-hidden mx-auto hover:ring-4 transition-all duration-300 cursor-pointer">
+          <img 
+            src="https://img.daisyui.com/images/profile/demo/spiderperson@192.webp" 
+            alt="Avatar"
+            class="object-cover w-full h-full"
+          />
+        </div>
+      </router-link>
     </div>
 
 

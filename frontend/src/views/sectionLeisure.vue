@@ -31,7 +31,8 @@
             @next="nextPage"
             @prev="prevPage"
             @edit="handleEdit" 
-            @delete="handleDelete" 
+            @delete="handleDelete"
+            @complete="handleComplete"
         >
             <template #cell-priority="{ item }">
                 <span :class="getPriorityClass(item.priority)" 
@@ -96,16 +97,16 @@ const leisureColumns = ref([
 ]);
 
 const leisureData = ref([
-  { id: 1, title: 'Salir a caminar', type: 'Actividad física', description: 'Caminar 30 minutos por el parque o el vecindario.', date: '2025-11-07', frecuency: 'Diaria', priority: 'Media' },
-  { id: 2, title: 'Ver película pendiente', type: 'Entretenimiento', description: 'Ver la película que quedó a medias el fin de semana pasado.', date: '2025-11-09', frecuency: 'Semanal', priority: 'Baja' },
-  { id: 3, title: 'Jugar videojuegos', type: 'Entretenimiento', description: 'Disfrutar un rato libre jugando con amigos en línea.', date: '2025-11-10', frecuency: 'Semanal', priority: 'Baja' },
-  { id: 4, title: 'Leer novela', type: 'Lectura', description: 'Avanzar un capítulo del libro antes de dormir.', date: '2025-11-08', frecuency: 'Día de por medio', priority: 'Media' },
-  { id: 5, title: 'Tomar café con amigos', type: 'Social', description: 'Compartir un rato agradable con amigos o familiares.', date: '2025-11-11', frecuency: 'Quincenal', priority: 'Alta' },
-  { id: 6, title: 'Ver serie nueva', type: 'Entretenimiento', description: 'Iniciar una serie recomendada en streaming.', date: '2025-11-13', frecuency: 'Semanal', priority: 'Media' },
-  { id: 7, title: 'Ir al gimnasio', type: 'Actividad física', description: 'Entrenamiento funcional o de fuerza durante una hora.', date: '2025-11-06', frecuency: 'Día de por medio', priority: 'Alta' },
-  { id: 8, title: 'Meditar', type: 'Bienestar', description: 'Meditar 10 minutos en la mañana para reducir el estrés.', date: '2025-11-08', frecuency: 'Diaria', priority: 'Alta' },
-  { id: 9, title: 'Escuchar pódcast', type: 'Lectura', description: 'Escuchar un episodio inspirador o educativo.', date: '2025-11-09', frecuency: 'Día de por medio', priority: 'Media' },
-  { id: 10, title: 'Día de desconexión', type: 'Bienestar', description: 'Pasar un día sin redes sociales ni trabajo pendiente.', date: '2025-11-16', frecuency: 'Mensual', priority: 'Alta' }
+  { id: 1, title: 'Salir a caminar', type: 'Actividad física', description: 'Caminar 30 minutos por el parque o el vecindario.', date: '2025-11-07', frecuency: 'Diaria', priority: 'Media', completed: false },
+  { id: 2, title: 'Ver película pendiente', type: 'Entretenimiento', description: 'Ver la película que quedó a medias el fin de semana pasado.', date: '2025-11-09', frecuency: 'Semanal', priority: 'Baja', completed: false },
+  { id: 3, title: 'Jugar videojuegos', type: 'Entretenimiento', description: 'Disfrutar un rato libre jugando con amigos en línea.', date: '2025-11-10', frecuency: 'Semanal', priority: 'Baja', completed: false },
+  { id: 4, title: 'Leer novela', type: 'Lectura', description: 'Avanzar un capítulo del libro antes de dormir.', date: '2025-11-08', frecuency: 'Día de por medio', priority: 'Media', completed: false },
+  { id: 5, title: 'Tomar café con amigos', type: 'Social', description: 'Compartir un rato agradable con amigos o familiares.', date: '2025-11-11', frecuency: 'Quincenal', priority: 'Alta', completed: false },
+  { id: 6, title: 'Ver serie nueva', type: 'Entretenimiento', description: 'Iniciar una serie recomendada en streaming.', date: '2025-11-13', frecuency: 'Semanal', priority: 'Media', completed: false },
+  { id: 7, title: 'Ir al gimnasio', type: 'Actividad física', description: 'Entrenamiento funcional o de fuerza durante una hora.', date: '2025-11-06', frecuency: 'Día de por medio', priority: 'Alta', completed: false },
+  { id: 8, title: 'Meditar', type: 'Bienestar', description: 'Meditar 10 minutos en la mañana para reducir el estrés.', date: '2025-11-08', frecuency: 'Diaria', priority: 'Alta', completed: false },
+  { id: 9, title: 'Escuchar pódcast', type: 'Lectura', description: 'Escuchar un episodio inspirador o educativo.', date: '2025-11-09', frecuency: 'Día de por medio', priority: 'Media', completed: false },
+  { id: 10, title: 'Día de desconexión', type: 'Bienestar', description: 'Pasar un día sin redes sociales ni trabajo pendiente.', date: '2025-11-16', frecuency: 'Mensual', priority: 'Alta', completed: false }
 ]);
 
 
@@ -124,6 +125,14 @@ const navigateToCreateAcademy = () => {
 
 const handleEdit = (id) => {
     router.push(`/editLeisure/${id}`); 
+};
+
+const handleComplete = (id) => {
+    const item = leisureData.value.find(l => l.id === id);
+    if (item) {
+        item.completed = !item.completed;
+        console.log(`Registro ${id} marcado como ${item.completed ? 'completado' : 'pendiente'}`);
+    }
 };
 
 const currentPage = ref(1);

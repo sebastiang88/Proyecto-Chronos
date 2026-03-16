@@ -31,7 +31,8 @@
             @next="nextPage"
             @prev="prevPage"
             @edit="handleEdit" 
-            @delete="handleDelete" 
+            @delete="handleDelete"
+            @complete="handleComplete"
         >
             <template #cell-priority="{ item }">
                 <span :class="getPriorityClass(item.priority)" 
@@ -101,16 +102,16 @@ const financesColumns = ref([
 ]);
 
 const financesData = ref([
-  { id: 1, title: 'Pago de arriendo', type: 'Gasto', description: 'Pago mensual del apartamento', date: '2025-11-05', amount: 900000 },
-  { id: 2, title: 'Salario mensual', type: 'Ingreso', description: 'Pago recibido por el trabajo de noviembre', date: '2025-11-01', amount: 2500000 },
-  { id: 3, title: 'Ahorro mensual', type: 'Ahorro', description: 'Transferencia a la cuenta de ahorros', date: '2025-11-02', amount: 300000 },
-  { id: 4, title: 'Compra de mercado', type: 'Gasto', description: 'Supermercado y productos del hogar', date: '2025-11-03', amount: 280000 },
-  { id: 5, title: 'Deuda con tarjeta', type: 'Deuda', description: 'Pago pendiente por compras con tarjeta de crédito', date: '2025-11-10', amount: 450000 },
-  { id: 6, title: 'Pago servicio de internet', type: 'Gasto', description: 'Pago mensual del plan de internet', date: '2025-11-08', amount: 85000 },
-  { id: 7, title: 'Venta de laptop usada', type: 'Ingreso', description: 'Venta de computador portátil antiguo', date: '2025-11-12', amount: 1200000 },
-  { id: 8, title: 'Ahorro para vacaciones', type: 'Ahorro', description: 'Depósito programado para viaje de fin de año', date: '2025-11-15', amount: 200000 },
-  { id: 9, title: 'Préstamo a un amigo', type: 'Deuda', description: 'Dinero prestado a un amigo, pendiente de devolución', date: '2025-11-20', amount: 150000 },
-  { id: 10, title: 'Cena con amigos', type: 'Gasto', description: 'Salida a comer con amigos el fin de semana', date: '2025-11-25', amount: 95000 }
+  { id: 1, title: 'Pago de arriendo', type: 'Gasto', description: 'Pago mensual del apartamento', date: '2025-11-05', amount: 900000, completed: false },
+  { id: 2, title: 'Salario mensual', type: 'Ingreso', description: 'Pago recibido por el trabajo de noviembre', date: '2025-11-01', amount: 2500000, completed: false },
+  { id: 3, title: 'Ahorro mensual', type: 'Ahorro', description: 'Transferencia a la cuenta de ahorros', date: '2025-11-02', amount: 300000, completed: false },
+  { id: 4, title: 'Compra de mercado', type: 'Gasto', description: 'Supermercado y productos del hogar', date: '2025-11-03', amount: 280000, completed: false },
+  { id: 5, title: 'Deuda con tarjeta', type: 'Deuda', description: 'Pago pendiente por compras con tarjeta de crédito', date: '2025-11-10', amount: 450000, completed: false },
+  { id: 6, title: 'Pago servicio de internet', type: 'Gasto', description: 'Pago mensual del plan de internet', date: '2025-11-08', amount: 85000, completed: false },
+  { id: 7, title: 'Venta de laptop usada', type: 'Ingreso', description: 'Venta de computador portátil antiguo', date: '2025-11-12', amount: 1200000, completed: false },
+  { id: 8, title: 'Ahorro para vacaciones', type: 'Ahorro', description: 'Depósito programado para viaje de fin de año', date: '2025-11-15', amount: 200000, completed: false },
+  { id: 9, title: 'Préstamo a un amigo', type: 'Deuda', description: 'Dinero prestado a un amigo, pendiente de devolución', date: '2025-11-20', amount: 150000, completed: false },
+  { id: 10, title: 'Cena con amigos', type: 'Gasto', description: 'Salida a comer con amigos el fin de semana', date: '2025-11-25', amount: 95000, completed: false }
 ]);
 
 
@@ -120,6 +121,14 @@ const navigateToCreateFinance = () => {
 
 const handleEdit = (id) => {
     router.push(`/editFinance/${id}`); 
+};
+
+const handleComplete = (id) => {
+    const item = financesData.value.find(f => f.id === id);
+    if (item) {
+        item.completed = !item.completed;
+        console.log(`Registro ${id} marcado como ${item.completed ? 'completado' : 'pendiente'}`);
+    }
 };
 
 const currentPage = ref(1);

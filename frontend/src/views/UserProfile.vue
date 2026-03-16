@@ -10,17 +10,20 @@
             <div class="avatar">
               <div class="w-24 h-24 rounded-full ring-4 ring-white ring-offset-2 ring-offset-blue-600 overflow-hidden">
                 <img
-                  src="https://img.daisyui.com/images/profile/demo/spiderperson@192.webp"
+                  :src="userProfile.fotoPerfil"
                   alt="Avatar del usuario"
                   class="object-cover w-full h-full"
                 />
               </div>
             </div>
-            <div>
+            <div class="flex-grow">
               <h1 class="text-3xl font-bold">{{ userProfile.nombre }}</h1>
               <p class="text-blue-100">{{ userProfile.email }}</p>
               <p class="text-sm text-blue-100 mt-2">Miembro desde {{ userProfile.fechaRegistro }}</p>
             </div>
+            <button @click="toggleEdit" class="btn btn-outline btn-white text-white border-white hover:bg-white hover:text-blue-600 focus:bg-transparent focus:text-white focus:border-white active:bg-transparent active:text-white transition-all duration-300">
+              {{ isEditing ? 'Cancelar' : 'Editar Perfil' }}
+            </button>
           </div>
         </div>
 
@@ -30,20 +33,39 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-medium text-gray-700">Nombre completo</label>
-              <p class="mt-1 text-gray-900">{{ userProfile.nombreCompleto }}</p>
+              <input v-if="isEditing" v-model="userProfile.nombreCompleto" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+              <p v-else class="mt-1 text-gray-900">{{ userProfile.nombreCompleto }}</p>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Fecha de nacimiento</label>
-              <p class="mt-1 text-gray-900">{{ userProfile.fechaNacimiento }}</p>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Teléfono</label>
-              <p class="mt-1 text-gray-900">{{ userProfile.telefono }}</p>
+              <input v-if="isEditing" v-model="userProfile.fechaNacimiento" type="date" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+              <p v-else class="mt-1 text-gray-900">{{ userProfile.fechaNacimiento }}</p>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Ubicación</label>
               <p class="mt-1 text-gray-900">{{ userProfile.ubicacion }}</p>
             </div>
+          </div>
+          <div v-if="isEditing" class="mt-6">
+            <label class="block text-sm font-medium text-gray-700">Foto de perfil</label>
+            <input type="file" @change="handleFileUpload" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+          </div>
+          <div v-if="isEditing" class="mt-6 border-t pt-6">
+            <h3 class="text-lg font-semibold mb-4 text-gray-800">Cambiar Contraseña</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Contraseña actual</label>
+                <input v-model="currentPassword" type="password" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Nueva contraseña</label>
+                <input v-model="newPassword" type="password" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+              </div>
+            </div>
+          </div>
+          <div v-if="isEditing" class="mt-6 flex justify-end space-x-4">
+            <button @click="saveChanges" class="btn btn-primary bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-all duration-300">Guardar Cambios</button>
+            <button @click="toggleEdit" class="btn btn-outline border-gray-300 text-gray-700 hover:bg-gray-100 font-semibold py-2 px-6 rounded-lg transition-all duration-300">Cancelar</button>
           </div>
         </div>
 
@@ -143,15 +165,20 @@
 import { ref } from 'vue';
 import AppSidebar from '../components/appSideBar.vue';
 
+// Estado de edición
+const isEditing = ref(false);
+const currentPassword = ref('');
+const newPassword = ref('');
+
 // Datos del perfil del usuario (simulados)
 const userProfile = ref({
   nombre: 'Estudiante Ibero',
   email: 'estudiante.ibero@email.com',
   fechaRegistro: 'Enero 2024',
   nombreCompleto: 'Juan Pérez García',
-  fechaNacimiento: '15 de marzo de 2000',
-  telefono: '+52 55 1234 5678',
+  fechaNacimiento: '2000-03-15',
   ubicacion: 'Ciudad de México, México',
+  fotoPerfil: 'https://img.daisyui.com/images/profile/demo/spiderperson@192.webp',
   metricas: {
     diasSeguidos: 7,
     tasaCompletitud: 68,
@@ -174,4 +201,46 @@ const userProfile = ref({
     { nombre: 'Tiempo Libre', icono: '🎮', totalCreadas: 95, completadas: 80, porcentaje: 84 }
   ]
 });
+
+// Funciones
+function toggleEdit() {
+  console.log('toggleEdit called, current isEditing:', isEditing.value);
+  isEditing.value = !isEditing.value;
+  if (!isEditing.value) {
+    // Reset passwords when canceling
+    currentPassword.value = '';
+    newPassword.value = '';
+  }
+}
+
+function handleFileUpload(event) {
+  const file = event.target.files[0];
+  if (file) {
+    // En una app real, subirías el archivo a un servidor
+    // Aquí simulamos cambiando la URL
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      userProfile.value.fotoPerfil = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+function saveChanges() {
+  // Aquí iría la lógica para guardar en el servidor
+  // Por ahora, solo validamos la contraseña si se cambió
+  if (newPassword.value) {
+    if (!currentPassword.value) {
+      alert('Debes ingresar la contraseña actual');
+      return;
+    }
+    // Simular cambio de contraseña
+    alert('Contraseña cambiada exitosamente');
+    currentPassword.value = '';
+    newPassword.value = '';
+  }
+  // Cambiar a modo vista
+  alert('Cambios guardados exitosamente');
+  isEditing.value = false;
+}
 </script>

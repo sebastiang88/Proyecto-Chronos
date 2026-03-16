@@ -26,7 +26,10 @@
                 <tr 
                     v-for="item in data" 
                     :key="item.id" 
-                    class="bg-white border-b border-gray-200 hover:bg-purple-100 transition duration-300"
+                    :class="[
+                        'border-b border-gray-200 hover:bg-purple-100 transition duration-300',
+                        item.completed ? 'bg-purple-50' : 'bg-white'
+                    ]"
                 >
                     <td class="w-4 p-4">
                         </td>
@@ -43,8 +46,27 @@
                     </td>
                     
                     <td class="px-6 py-4 text-center space-x-6 whitespace-nowrap w-32">
-                        <button @click="$emit('edit', item.id)" class="font-medium text-purple-600 hover:text-purple-800 transition">Editar</button>
-                        <button @click="$emit('delete', item.id)" class="font-medium text-red-600 hover:text-red-800 transition">Eliminar</button>
+                        <button @click="$emit('complete', item.id)" :class="[
+                            'transition',
+                            item.completed ? 'text-gray-600 hover:text-gray-800' : 'text-green-600 hover:text-green-800'
+                        ]" :title="item.completed ? 'Desmarcar como completada' : 'Marcar como completada'">
+                            <svg v-if="item.completed" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path>
+                            </svg>
+                            <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </button>
+                        <button v-if="!item.completed" @click="$emit('edit', item.id)" class="text-purple-600 hover:text-purple-800 transition ml-2" title="Editar">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                            </svg>
+                        </button>
+                        <button v-if="!item.completed" @click="$emit('delete', item.id)" class="text-red-600 hover:text-red-800 transition ml-2" title="Eliminar">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                        </button>
                     </td>
                 </tr>
             </tbody>

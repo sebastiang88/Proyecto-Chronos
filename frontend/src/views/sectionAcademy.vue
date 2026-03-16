@@ -31,7 +31,8 @@
             @next="nextPage"
             @prev="prevPage"
             @edit="handleEdit" 
-            @delete="handleDelete" 
+            @delete="handleDelete"
+            @complete="handleComplete"
         >
             <template #cell-priority="{ item }">
                 <span :class="getPriorityClass(item.priority)" 
@@ -96,16 +97,16 @@ const taskColumns = ref([
 ]);
 
 const tasksData = ref([
-  { id: 1, title: 'Reporte Final de Cálculo', type: 'Tarea', description: 'Revisar todos los ejercicios y gráficos para el día de entrega.', date: '2025-12-15', subject: 'Matemáticas', priority: 'Alta' },
-  { id: 2, title: 'Examen parcial de IA', type: 'Examen', description: 'Repasar los temas de aprendizaje automático y redes neuronales.', date: '2025-11-28', subject: 'Tecnología', priority: 'Alta' },
-  { id: 3, title: 'Proyecto de Filosofía', type: 'Proyecto', description: 'Desarrollar una presentación sobre el pensamiento existencialista.', date: '2025-11-20', subject: 'Filosofía', priority: 'Media' },
-  { id: 4, title: 'Taller de Álgebra Lineal', type: 'Tarea', description: 'Resolver los ejercicios sobre matrices y determinantes.', date: '2025-11-12', subject: 'Matemáticas', priority: 'Media' },
-  { id: 5, title: 'Examen final de Programación', type: 'Examen', description: 'Prueba práctica sobre estructuras de datos y lógica.', date: '2025-12-08', subject: 'Programación', priority: 'Alta' },
-  { id: 6, title: 'Proyecto de Base de Datos', type: 'Proyecto', description: 'Diseñar una base de datos relacional y generar el modelo ER.', date: '2025-12-10', subject: 'Informática', priority: 'Alta' },
-  { id: 7, title: 'Tarea de Historia Moderna', type: 'Tarea', description: 'Analizar las causas y consecuencias de la Revolución Industrial.', date: '2025-11-15', subject: 'Historia', priority: 'Baja' },
-  { id: 8, title: 'Examen de Física', type: 'Examen', description: 'Estudiar dinámica, leyes de Newton y movimiento circular.', date: '2025-11-22', subject: 'Física', priority: 'Media' },
-  { id: 9, title: 'Proyecto de IA aplicada', type: 'Proyecto', description: 'Crear un modelo de clasificación con datos reales.', date: '2025-12-01', subject: 'Tecnología', priority: 'Alta' },
-  { id: 10, title: 'Tarea de Redacción Técnica', type: 'Tarea', description: 'Redactar un texto formal aplicando normas APA.', date: '2025-11-18', subject: 'Comunicación', priority: 'Media' }
+  { id: 1, title: 'Reporte Final de Cálculo', type: 'Tarea', description: 'Revisar todos los ejercicios y gráficos para el día de entrega.', date: '2025-12-15', subject: 'Matemáticas', priority: 'Alta', completed: false },
+  { id: 2, title: 'Examen parcial de IA', type: 'Examen', description: 'Repasar los temas de aprendizaje automático y redes neuronales.', date: '2025-11-28', subject: 'Tecnología', priority: 'Alta', completed: false },
+  { id: 3, title: 'Proyecto de Filosofía', type: 'Proyecto', description: 'Desarrollar una presentación sobre el pensamiento existencialista.', date: '2025-11-20', subject: 'Filosofía', priority: 'Media', completed: false },
+  { id: 4, title: 'Taller de Álgebra Lineal', type: 'Tarea', description: 'Resolver los ejercicios sobre matrices y determinantes.', date: '2025-11-12', subject: 'Matemáticas', priority: 'Media', completed: false },
+  { id: 5, title: 'Examen final de Programación', type: 'Examen', description: 'Prueba práctica sobre estructuras de datos y lógica.', date: '2025-12-08', subject: 'Programación', priority: 'Alta', completed: false },
+  { id: 6, title: 'Proyecto de Base de Datos', type: 'Proyecto', description: 'Diseñar una base de datos relacional y generar el modelo ER.', date: '2025-12-10', subject: 'Informática', priority: 'Alta', completed: false },
+  { id: 7, title: 'Tarea de Historia Moderna', type: 'Tarea', description: 'Analizar las causas y consecuencias de la Revolución Industrial.', date: '2025-11-15', subject: 'Historia', priority: 'Baja', completed: false },
+  { id: 8, title: 'Examen de Física', type: 'Examen', description: 'Estudiar dinámica, leyes de Newton y movimiento circular.', date: '2025-11-22', subject: 'Física', priority: 'Media', completed: false },
+  { id: 9, title: 'Proyecto de IA aplicada', type: 'Proyecto', description: 'Crear un modelo de clasificación con datos reales.', date: '2025-12-01', subject: 'Tecnología', priority: 'Alta', completed: false },
+  { id: 10, title: 'Tarea de Redacción Técnica', type: 'Tarea', description: 'Redactar un texto formal aplicando normas APA.', date: '2025-11-18', subject: 'Comunicación', priority: 'Media', completed: false }
 ]);
 
 
@@ -124,6 +125,14 @@ const navigateToCreateAcademy = () => {
 
 const handleEdit = (id) => {
     router.push(`/editAcademy/${id}`); 
+};
+
+const handleComplete = (id) => {
+    const task = tasksData.value.find(t => t.id === id);
+    if (task) {
+        task.completed = !task.completed; // Toggle completed status
+        console.log(`Tarea ${id} marcada como ${task.completed ? 'completada' : 'pendiente'}`);
+    }
 };
 
 const currentPage = ref(1);

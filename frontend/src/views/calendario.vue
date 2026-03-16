@@ -108,7 +108,7 @@
                     @click.stop="verRecordatorio(rec)"
                     :title="rec.titulo"
                 >
-                    {{ rec.titulo }}
+                    <span v-if="rec.completed" class="mr-1">✅</span>{{ rec.titulo }}
                 </div>
                 <div
                     v-if="i === 3"
@@ -207,6 +207,17 @@
         </button>
 
         <button 
+            :class="[
+                'px-4 py-2 text-sm font-semibold rounded-lg border-2 transition-colors duration-200',
+                recordatorioSeleccionado.completed 
+                    ? 'border-gray-500 text-gray-600 hover:bg-gray-50' 
+                    : 'border-green-500 text-green-600 hover:bg-green-50'
+            ]"
+            @click="completarRecordatorio(recordatorioSeleccionado.id)">
+            {{ recordatorioSeleccionado.completed ? 'Deshacer' : 'Completar' }}
+        </button>
+
+        <button 
             class="px-4 py-2 text-sm font-semibold rounded-lg border-2 border-blue-500 text-blue-600 hover:bg-blue-50 transition-colors duration-200"
             @click="irAEditar(recordatorioSeleccionado)">
             Editar
@@ -291,7 +302,9 @@
               {{ categoriaInfo(rec.categoria).icono }}
             </div>
             <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium text-gray-800 truncate">{{ rec.titulo }}</p>
+              <p class="text-sm font-medium text-gray-800 truncate">
+                <span v-if="rec.completed" class="mr-1">✅</span>{{ rec.titulo }}
+              </p>
               <p class="text-xs text-gray-400" v-if="rec.hora">🕐 {{ rec.hora }}</p>
             </div>
             <span class="text-xs px-2 py-0.5 rounded-full flex-shrink-0" :class="categoriaInfo(rec.categoria).chip">
@@ -385,27 +398,27 @@ const categoriaInfo = (id) => categorias.find((c) => c.id === id) || categorias[
 // ─── Recordatorios (reemplazar con datos del backend) ────────────
 const recordatorios = ref([
   // ─── Estudio ───────────────────────────────────────────────────
-  { id: 1, titulo: 'Entregar tarea de BD', categoria: 'estudio', fecha: formatDate(hoy, 0), hora: '23:59', tipo: 'tarea', materia: 'Bases de Datos', prioridad: 'Alta', descripcion: 'Subir al campus virtual', notificaciones: true },
-  { id: 2, titulo: 'Parcial de Cálculo', categoria: 'estudio', fecha: formatDate(hoy, 2), hora: '10:00', tipo: 'examen', materia: 'Cálculo', prioridad: 'Alta', descripcion: 'Salón B-201', notificaciones: true },
-  { id: 3, titulo: 'Proyecto de IA', categoria: 'estudio', fecha: formatDate(hoy, 5), hora: '23:59', tipo: 'proyecto', materia: 'Inteligencia Artificial', prioridad: 'Alta', descripcion: 'Entregar modelo entrenado y documentación', notificaciones: true },
-  { id: 4, titulo: 'Reunión grupo', categoria: 'estudio', fecha: formatDate(hoy, 1), hora: '14:00', tipo: 'proyecto', materia: 'Ingeniería de Software', prioridad: 'Media', descripcion: 'Proyecto final semestre', notificaciones: true },
-  { id: 5, titulo: 'Taller de Álgebra', categoria: 'estudio', fecha: formatDate(hoy, 4), hora: '08:00', tipo: 'tarea', materia: 'Álgebra Lineal', prioridad: 'Media', descripcion: 'Ejercicios de matrices y determinantes', notificaciones: false },
+  { id: 1, titulo: 'Entregar tarea de BD', categoria: 'estudio', fecha: formatDate(hoy, 0), hora: '23:59', tipo: 'tarea', materia: 'Bases de Datos', prioridad: 'Alta', descripcion: 'Subir al campus virtual', notificaciones: true, completed: false },
+  { id: 2, titulo: 'Parcial de Cálculo', categoria: 'estudio', fecha: formatDate(hoy, 2), hora: '10:00', tipo: 'examen', materia: 'Cálculo', prioridad: 'Alta', descripcion: 'Salón B-201', notificaciones: true, completed: false },
+  { id: 3, titulo: 'Proyecto de IA', categoria: 'estudio', fecha: formatDate(hoy, 5), hora: '23:59', tipo: 'proyecto', materia: 'Inteligencia Artificial', prioridad: 'Alta', descripcion: 'Entregar modelo entrenado y documentación', notificaciones: true, completed: false },
+  { id: 4, titulo: 'Reunión grupo', categoria: 'estudio', fecha: formatDate(hoy, 1), hora: '14:00', tipo: 'proyecto', materia: 'Ingeniería de Software', prioridad: 'Media', descripcion: 'Proyecto final semestre', notificaciones: true, completed: false },
+  { id: 5, titulo: 'Taller de Álgebra', categoria: 'estudio', fecha: formatDate(hoy, 4), hora: '08:00', tipo: 'tarea', materia: 'Álgebra Lineal', prioridad: 'Media', descripcion: 'Ejercicios de matrices y determinantes', notificaciones: false, completed: false },
 
   // ─── Salud ─────────────────────────────────────────────────────
-  { id: 6, titulo: 'Cita médica general', categoria: 'salud', fecha: formatDate(hoy, 0), hora: '09:00', tipo: 'cita-medica', prioridad: 'Alta', descripcion: 'Control de rutina', notificaciones: true },
-  { id: 7, titulo: 'Tomar vitaminas', categoria: 'salud', fecha: formatDate(hoy, 1), hora: '08:00', tipo: 'medicamento', prioridad: 'Media', descripcion: 'Complejo B después del desayuno', notificaciones: true },
-  { id: 8, titulo: 'Control nutricional', categoria: 'salud', fecha: formatDate(hoy, 6), hora: '11:00', tipo: 'control', prioridad: 'Media', descripcion: '', notificaciones: true },
+  { id: 6, titulo: 'Cita médica general', categoria: 'salud', fecha: formatDate(hoy, 0), hora: '09:00', tipo: 'cita-medica', prioridad: 'Alta', descripcion: 'Control de rutina', notificaciones: true, completed: false },
+  { id: 7, titulo: 'Tomar vitaminas', categoria: 'salud', fecha: formatDate(hoy, 1), hora: '08:00', tipo: 'medicamento', prioridad: 'Media', descripcion: 'Complejo B después del desayuno', notificaciones: true, completed: false },
+  { id: 8, titulo: 'Control nutricional', categoria: 'salud', fecha: formatDate(hoy, 6), hora: '11:00', tipo: 'control', prioridad: 'Media', descripcion: '', notificaciones: true, completed: false },
 
   // ─── Finanzas ──────────────────────────────────────────────────
-  { id: 9, titulo: 'Pagar matrícula', categoria: 'finanzas', fecha: formatDate(hoy, 0), hora: '', tipo: 'gasto', montoNumerico: 1500000, monto: '$ 1.500.000', descripcion: 'Fecha límite sin recargo', notificaciones: true },
-  { id: 10, titulo: 'Pagar arriendo', categoria: 'finanzas', fecha: formatDate(hoy, 3), hora: '', tipo: 'gasto', montoNumerico: 900000, monto: '$ 900.000', descripcion: '', notificaciones: true },
-  { id: 11, titulo: 'Ahorro mensual', categoria: 'finanzas', fecha: formatDate(hoy, 2), hora: '09:00', tipo: 'ahorro', montoNumerico: 300000, monto: '$ 300.000', descripcion: 'Transferencia a cuenta de ahorros', notificaciones: false },
-  { id: 12, titulo: 'Pago tarjeta crédito', categoria: 'finanzas', fecha: formatDate(hoy, 5), hora: '', tipo: 'deuda', montoNumerico: 450000, monto: '$ 450.000', descripcion: 'Pago mínimo antes del corte', notificaciones: true },
+  { id: 9, titulo: 'Pagar matrícula', categoria: 'finanzas', fecha: formatDate(hoy, 0), hora: '', tipo: 'gasto', montoNumerico: 1500000, monto: '$ 1.500.000', descripcion: 'Fecha límite sin recargo', notificaciones: true, completed: false },
+  { id: 10, titulo: 'Pagar arriendo', categoria: 'finanzas', fecha: formatDate(hoy, 3), hora: '', tipo: 'gasto', montoNumerico: 900000, monto: '$ 900.000', descripcion: '', notificaciones: true, completed: false },
+  { id: 11, titulo: 'Ahorro mensual', categoria: 'finanzas', fecha: formatDate(hoy, 2), hora: '09:00', tipo: 'ahorro', montoNumerico: 300000, monto: '$ 300.000', descripcion: 'Transferencia a cuenta de ahorros', notificaciones: false, completed: false },
+  { id: 12, titulo: 'Pago tarjeta crédito', categoria: 'finanzas', fecha: formatDate(hoy, 5), hora: '', tipo: 'deuda', montoNumerico: 450000, monto: '$ 450.000', descripcion: 'Pago mínimo antes del corte', notificaciones: true, completed: false },
 
   // ─── Tiempo libre ──────────────────────────────────────────────
-  { id: 13, titulo: 'Series / descanso', categoria: 'tiempo-libre', fecha: formatDate(hoy, 0), hora: '20:00', tipo: 'entretenimiento', frecuencia: 'semanal', prioridad: 'Baja', descripcion: '', notificaciones: false },
-  { id: 14, titulo: 'Salida con amigos', categoria: 'tiempo-libre', fecha: formatDate(hoy, 6), hora: '18:00', tipo: 'social', frecuencia: 'quincenal', prioridad: 'Media', descripcion: 'Cine y cena', notificaciones: true },
-  { id: 15, titulo: 'Ir al gimnasio', categoria: 'tiempo-libre', fecha: formatDate(hoy, 1), hora: '06:00', tipo: 'actividad-fisica', frecuencia: 'dia-por-medio', prioridad: 'Alta', descripcion: 'Entrenamiento funcional', notificaciones: true },
+  { id: 13, titulo: 'Series / descanso', categoria: 'tiempo-libre', fecha: formatDate(hoy, 0), hora: '20:00', tipo: 'entretenimiento', frecuencia: 'semanal', prioridad: 'Baja', descripcion: '', notificaciones: false, completed: false },
+  { id: 14, titulo: 'Salida con amigos', categoria: 'tiempo-libre', fecha: formatDate(hoy, 6), hora: '18:00', tipo: 'social', frecuencia: 'quincenal', prioridad: 'Media', descripcion: 'Cine y cena', notificaciones: true, completed: false },
+  { id: 15, titulo: 'Ir al gimnasio', categoria: 'tiempo-libre', fecha: formatDate(hoy, 1), hora: '06:00', tipo: 'actividad-fisica', frecuencia: 'dia-por-medio', prioridad: 'Alta', descripcion: 'Entrenamiento funcional', notificaciones: true, completed: false },
 ])
 
 const getPriorityClass = (priority) => {
@@ -512,6 +525,13 @@ function abrirModalNuevo() {
 function eliminarRecordatorio(id) {
   recordatorios.value = recordatorios.value.filter((r) => r.id !== id)
   modalVerAbierto.value = false
+}
+
+function completarRecordatorio(id) {
+  const rec = recordatorios.value.find(r => r.id === id)
+  if (rec) {
+    rec.completed = !rec.completed
+  }
 }
 
 function verTodosDelDia(fecha) {

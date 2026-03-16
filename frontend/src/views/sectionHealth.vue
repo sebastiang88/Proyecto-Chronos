@@ -31,7 +31,8 @@
             @next="nextPage"
             @prev="prevPage"
             @edit="handleEdit" 
-            @delete="handleDelete" 
+            @delete="handleDelete"
+            @complete="handleComplete"
         >
             <template #cell-priority="{ item }">
                 <span :class="getPriorityClass(item.priority)" 
@@ -95,16 +96,16 @@ const healthColumns = ref([
 ]);
 
 const healthData = ref([
-  { id: 1, title: 'Cita medicina general', type: 'Cita médica', description: 'Tengo una cita con el médico porque me duele la cabeza.', date: '2025-12-15', priority: 'Alta' },
-  { id: 2, title: 'PREP', type: 'Medicamento', description: 'Tomar todos los días a la misma hora.', date: '2025-11-28', priority: 'Alta' },
-  { id: 3, title: 'Meditar', type: 'Hábito saludable', description: 'Dedicar 15 minutos a meditar día de por medio.', date: '2025-11-10', priority: 'Baja' },
-  { id: 4, title: 'Control odontológico', type: 'Control', description: 'Revisión dental de rutina cada seis meses.', date: '2025-11-22', priority: 'Media' },
-  { id: 5, title: 'Tratamiento fisioterapia', type: 'Tratamiento', description: 'Sesión de fisioterapia por lesión en el hombro.', date: '2025-11-18', priority: 'Alta' },
-  { id: 6, title: 'Vitaminas diarias', type: 'Medicamento', description: 'Tomar complejo B después del desayuno.', date: '2025-11-09', priority: 'Baja' },
-  { id: 7, title: 'Chequeo general anual', type: 'Control', description: 'Exámenes médicos de rutina y análisis de laboratorio.', date: '2025-12-01', priority: 'Alta' },
-  { id: 8, title: 'Hidratación constante', type: 'Hábito saludable', description: 'Beber al menos 2 litros de agua al día.', date: '2025-11-06', priority: 'Baja' },
-  { id: 9, title: 'Terapia psicológica', type: 'Cita médica', description: 'Sesión mensual con el psicólogo.', date: '2025-11-20', priority: 'Media' },
-  { id: 10, title: 'Tratamiento dermatológico', type: 'Tratamiento', description: 'Aplicar crema recetada en la noche durante 15 días.', date: '2025-11-08', priority: 'Media' }
+  { id: 1, title: 'Cita medicina general', type: 'Cita médica', description: 'Tengo una cita con el médico porque me duele la cabeza.', date: '2025-12-15', priority: 'Alta', completed: false },
+  { id: 2, title: 'PREP', type: 'Medicamento', description: 'Tomar todos los días a la misma hora.', date: '2025-11-28', priority: 'Alta', completed: false },
+  { id: 3, title: 'Meditar', type: 'Hábito saludable', description: 'Dedicar 15 minutos a meditar día de por medio.', date: '2025-11-10', priority: 'Baja', completed: false },
+  { id: 4, title: 'Control odontológico', type: 'Control', description: 'Revisión dental de rutina cada seis meses.', date: '2025-11-22', priority: 'Media', completed: false },
+  { id: 5, title: 'Tratamiento fisioterapia', type: 'Tratamiento', description: 'Sesión de fisioterapia por lesión en el hombro.', date: '2025-11-18', priority: 'Alta', completed: false },
+  { id: 6, title: 'Vitaminas diarias', type: 'Medicamento', description: 'Tomar complejo B después del desayuno.', date: '2025-11-09', priority: 'Baja', completed: false },
+  { id: 7, title: 'Chequeo general anual', type: 'Control', description: 'Exámenes médicos de rutina y análisis de laboratorio.', date: '2025-12-01', priority: 'Alta', completed: false },
+  { id: 8, title: 'Hidratación constante', type: 'Hábito saludable', description: 'Beber al menos 2 litros de agua al día.', date: '2025-11-06', priority: 'Baja', completed: false },
+  { id: 9, title: 'Terapia psicológica', type: 'Cita médica', description: 'Sesión mensual con el psicólogo.', date: '2025-11-20', priority: 'Media', completed: false },
+  { id: 10, title: 'Tratamiento dermatológico', type: 'Tratamiento', description: 'Aplicar crema recetada en la noche durante 15 días.', date: '2025-11-08', priority: 'Media', completed: false }
 ]);
 
 const getPriorityClass = (priority) => {
@@ -122,6 +123,14 @@ const navigateToCreateHealth = () => {
 
 const handleEdit = (id) => {
     router.push(`/editHealth/${id}`); 
+};
+
+const handleComplete = (id) => {
+    const item = healthData.value.find(h => h.id === id);
+    if (item) {
+        item.completed = !item.completed;
+        console.log(`Registro ${id} marcado como ${item.completed ? 'completado' : 'pendiente'}`);
+    }
 };
 
 const currentPage = ref(1);

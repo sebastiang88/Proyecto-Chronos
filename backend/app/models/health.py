@@ -1,3 +1,5 @@
+#estructura de datos para modulo de salud
+
 from pydantic import BaseModel, Field, field_validator
 from datetime import datetime
 from typing import Optional

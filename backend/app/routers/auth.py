@@ -1,3 +1,6 @@
+
+#Autenticacion (registrar, login, obtener usuario actual)
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from datetime import datetime, timedelta

@@ -1,3 +1,5 @@
+#endpoints para modulo financiero
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from datetime import datetime
 from typing import List

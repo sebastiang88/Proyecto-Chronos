@@ -1,3 +1,5 @@
+#Seguridad (hashear contrasena, crear token, verificar token)
+
 from datetime import datetime, timedelta
 from typing import Optional
 from jose import JWTError, jwt

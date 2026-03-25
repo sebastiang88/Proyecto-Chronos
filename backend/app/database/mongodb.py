@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-from dotenv import load_dotenv
+from dotenv import load_dotenv #cargar las variables de entorno 
 import os
 
 load_dotenv()

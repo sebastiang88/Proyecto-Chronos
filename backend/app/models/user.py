@@ -1,3 +1,5 @@
+#estructura de datos para usuarios
+
 from pydantic import BaseModel, EmailStr, Field, field_validator
 from datetime import datetime
 from typing import Optional

@@ -1,4 +1,5 @@
-from pydantic import BaseModel, Field, field_validator
+#estructura de datos para modulo academico
+
 from datetime import datetime
 from typing import Optional
 from bson import ObjectId

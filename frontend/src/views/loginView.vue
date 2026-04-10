@@ -104,6 +104,14 @@
 
         <PasswordValidator :password="password" />
 
+        <!-- Mensaje de error -->
+        <div v-if="errorMessage" class="alert alert-error mt-4 max-w-md mx-auto">
+          <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>{{ errorMessage }}</span>
+        </div>
+
         <div class="flex w-full mt-6">
           <div class="card bg-base-300 rounded-box grid grow place-items-center">
             <router-link to="/createAccount" class="link hover:underline text-[#2A00FF] font-semibold">
@@ -129,8 +137,10 @@
           'bg-gradient-to-br from-blue-600 to-purple-600 hover:from-orange-600 hover:to-pink-400': canSubmit
         }"
       >
-        Ingresar
+        <span v-if="loading" class="loading loading-spinner loading-md"></span>
+        <span v-else>Ingresar</span>
         <svg
+          v-if="!loading"
           class="w-3.5 h-3.5 ms-2"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
@@ -166,10 +176,13 @@ import { useRouter } from 'vue-router'
 import imagenLogin from '../assets/ImagenLogin.jpg'
 import PasswordValidator from '../components/passwordValidator.vue'
 import breadCrumbs from '../components/breadCrumbs.vue'
+import { authService } from '../services/authService.js'
 
 const showPassword = ref(false)
 const password = ref('')
 const email = ref('') 
+const loading = ref(false)
+const errorMessage = ref('')
 
 const isInstitutionalEmail = computed(() => {
     if (!email.value) return false; 
@@ -190,14 +203,30 @@ const allPasswordValid = computed(() => {
 })
 
 const canSubmit = computed(() => {
-    return isInstitutionalEmail.value && allPasswordValid.value
+    return isInstitutionalEmail.value && allPasswordValid.value && !loading.value
 })
 
 const router = useRouter() 
 
-const login = () => {
-    if (canSubmit.value) { 
+const login = async () => {
+    if (!canSubmit.value) return
+    
+    loading.value = true
+    errorMessage.value = ''
+    
+    try {
+        await authService.login({
+            email: email.value,
+            password: password.value
+        })
+        
+        // Redirigir al home después del login exitoso
         router.push('/home')
+    } catch (error) {
+        errorMessage.value = error.detail || 'Error al iniciar sesión. Verifica tus credenciales.'
+        console.error('Error de login:', error)
+    } finally {
+        loading.value = false
     }
 }
 </script>

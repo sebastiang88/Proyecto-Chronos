@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col w-full min-h-screen bg-base-100  items-center mb-8 mt-8 " >
+   <div class="flex flex-col w-full min-h-screen bg-base-100 items-center mb-8 mt-8">
 
     <!--título-->
       <div
@@ -12,7 +12,7 @@
       <div
         class="text-2xl font-bold text-black mt-4 mb-4 text-center text-shadow-lg"
       >
-       Organiza tu vida en un solo lugar. <br>
+        Organiza tu vida en un solo lugar. <br>
         Planifica tus tareas, rutinas, finanzas y calendario fácilmente. <br>
         Todo bajo control, todos los días.
       </div>
@@ -52,6 +52,26 @@
             id="email-address-icon"
             class="bg-gray-50 border-2 border-purple-600 text-gray-900 text-sm rounded-lg block w-full ps-10 p-2.5"
             placeholder="@estudiante.ibero.edu.co"
+          />
+        </div>
+      </form>
+
+      <!-- Campos adicionales -->
+      <form class="max-w-sm mt-6 mb-4">
+        <div class="relative mb-4">
+          <input
+            v-model="username"
+            type="text"
+            class="bg-gray-50 border-2 border-purple-600 text-gray-900 text-sm rounded-lg block w-full ps-4 p-2.5"
+            placeholder="Nombre de usuario"
+          />
+        </div>
+        <div class="relative">
+          <input
+            v-model="fullName"
+            type="text"
+            class="bg-gray-50 border-2 border-purple-600 text-gray-900 text-sm rounded-lg block w-full ps-4 p-2.5"
+            placeholder="Nombre completo"
           />
         </div>
       </form>
@@ -168,6 +188,14 @@
 
         <PasswordValidator :password="password" />
         
+        <!-- Mensaje de error -->
+        <div v-if="errorMessage" class="alert alert-error mt-4 max-w-md mx-auto">
+          <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>{{ errorMessage }}</span>
+        </div>
+        
       </div>
 
     <!--botonesDeInicio-->  
@@ -183,7 +211,8 @@
                   'bg-gradient-to-br from-blue-600 to-purple-600 shadow-blue-500/50 hover:from-blue-700 hover:to-purple-700': canSubmit
               }"
           >
-              Registrarse
+              <span v-if="loading" class="loading loading-spinner loading-md"></span>
+              <span v-else>Registrarse</span>
         </button>
 
     <!--modalDeExito -->
@@ -236,21 +265,23 @@
           </button>
         </div>
       </div>
-      
-    </div>
-
+  </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import PasswordValidator from '../components/passwordValidator.vue'
+import { authService } from '../services/authService.js'
 
 const showPassword = ref(false)
 const password = ref('')
 const confirmPassword = ref('') 
-const email = ref('') 
-
+const email = ref('')
+const username = ref('')
+const fullName = ref('')
+const loading = ref(false)
+const errorMessage = ref('')
 const showSuccessModal = ref(false) 
 
 const isInstitutionalEmail = computed(() => {
@@ -276,16 +307,36 @@ const passwordsMatch = computed(() => {
 })
 
 const canSubmit = computed(() => {
-    return isInstitutionalEmail.value && allPasswordValid.value && passwordsMatch.value
+    return isInstitutionalEmail.value && 
+           allPasswordValid.value && 
+           passwordsMatch.value && 
+           username.value.trim() && 
+           fullName.value.trim() &&
+           !loading.value
 })
 
 const router = useRouter() 
 
-const handleRegistration = () => {
-    if (canSubmit.value) { 
-        showSuccessModal.value = true 
-    } else {
-        console.log('Fallo de validación. El botón está deshabilitado.');
+const handleRegistration = async () => {
+    if (!canSubmit.value) return
+    
+    loading.value = true
+    errorMessage.value = ''
+    
+    try {
+        await authService.register({
+            email: email.value,
+            username: username.value,
+            full_name: fullName.value,
+            password: password.value
+        })
+        
+        showSuccessModal.value = true
+    } catch (error) {
+        errorMessage.value = error.detail || 'Error al crear cuenta. Intenta nuevamente.'
+        console.error('Error de registro:', error)
+    } finally {
+        loading.value = false
     }
 }
 

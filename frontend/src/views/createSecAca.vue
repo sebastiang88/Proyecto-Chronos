@@ -128,11 +128,25 @@
             </div>
 
             <div class="col-span-2 flex justify-center pt-8">
+                <!-- Mensaje de error -->
+                <div v-if="errorMessage" class="alert alert-error mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>{{ errorMessage }}</span>
+                </div>
+                
                 <button 
                     @click="navigateToSectionAcademy"
+                    :disabled="loading"
                     class="bg-gradient-to-br from-blue-600 to-purple-600 hover:from-orange-600 hover:to-pink-400 text-white font-bold py-2 w-full rounded-lg shadow-lg transition duration-300 transform"
+                    :class="{
+                        'bg-gray-400 cursor-not-allowed': loading,
+                        'hover:scale-105': !loading
+                    }"
                 >
-                    Agregar
+                    <span v-if="loading" class="loading loading-spinner loading-md"></span>
+                    <span v-else>Agregar</span>
                 </button>
             </div>
             
@@ -152,12 +166,14 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
-
 import iconoCampana from '../assets/IconoCampana.png';
 import ModalBase from '../components/modalBase.vue';
+import { academyService } from '../services/academyService.js';
 
 const router = useRouter();
 const showSuccessModal = ref(false);
+const loading = ref(false);
+const errorMessage = ref('');
 
 // Objeto del formulario — conectar al backend con form.value.estudio
 const form = ref({
@@ -177,11 +193,33 @@ const goBack = () => {
     router.back();
 };
 
-const navigateToSectionAcademy = () => {
-    // Aquí conectas con el backend:
-    // await api.post('/recordatorios/estudio', form.value.estudio)
-    console.log('Datos a enviar:', form.value.estudio)
-    showSuccessModal.value = true;
+const navigateToSectionAcademy = async () => {
+    if (!form.value.estudio.titulo || !form.value.estudio.materia || !form.value.estudio.prioridad) {
+        errorMessage.value = 'Por favor completa los campos obligatorios';
+        return;
+    }
+    
+    loading.value = true;
+    errorMessage.value = '';
+    
+    try {
+        // Preparar datos para el backend
+        const academyData = {
+            title: form.value.estudio.titulo,
+            subject: form.value.estudio.materia,
+            priority: form.value.estudio.prioridad,
+            description: form.value.estudio.descripcion,
+            due_date: form.value.estudio.fecha ? new Date(form.value.estudio.fecha).toISOString() : null
+        };
+        
+        await academyService.create(academyData);
+        showSuccessModal.value = true;
+    } catch (error) {
+        errorMessage.value = error.detail || 'Error al crear registro académico';
+        console.error('Error:', error);
+    } finally {
+        loading.value = false;
+    }
 };
 
 const handleSuccessConfirm = () => {
